@@ -1,4 +1,8 @@
 
+"""
+Compute tB from pB using secch_prep.pro
+"""
+
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -9,15 +13,12 @@ import sunpy.visualization.colormaps as cm
 # define files
 
 tb_dir = 'data/img/'
-pb_dir = 'data/seq/'
+pb_dir = 'data/secchi_prep/'
 
 tb_file  = '20220601_035424_d7c2A.fts'
 tb_file2 = '20220601_042424_d7c2A.fts'
 
-pb_files = ['20220601_040835_n7c2A.fts', \
-            '20220601_040905_n7c2A.fts', \
-            '20220601_040935_n7c2A.fts'
-]
+pb_file = '20220601_040835_1B7c2A.fts'
 
 #------------------------------------------------------------------------------
 # Read total brightness file
@@ -33,28 +34,16 @@ print(f"tb data type {tb.dtype}")
 print(f"tb range {np.min(tb)} {np.max(tb)}")
 
 #------------------------------------------------------------------------------
-# Read polarized brightness files
+# Read tB file created from polarized brightness files
 
 print(80*'-')
 
-pb = 0.0
+pb_hdu = fits.open(pb_dir+pb_file)[0]
 
-firstpass = True
+pb = pb_hdu.data
 
-for file in pb_files:
-    pb_hdu = fits.open(pb_dir+file)[0]
-    if firstpass:
-        pb = pb_hdu.data
-        firstpass = False
-    else:
-        pb += pb_hdu.data
-    print(f"pb file polarization {pb_hdu.header['POLAR']}")
-
-pbf = 2.0 * pb.astype('float')/3.0
-pb = pbf.astype('uint16')
-
-print(f"tb data type {pb.dtype}")
-print(f"tb range {np.min(pb)} {np.max(pb)}")
+print(f"pb data type {pb.dtype}")
+print(f"pb range {np.min(pb)} {np.max(pb)}")
 
 print(80*'-')
 
@@ -81,8 +70,8 @@ print(80*'-')
 
 #------------------------------------------------------------------------------
 
-#cmap = plt.get_cmap('stereocor2')
-cmap = plt.get_cmap('soholasco2')
+cmap = plt.get_cmap('stereocor2')
+#cmap = plt.get_cmap('soholasco2')
 
 fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(ncols=2, nrows=2, figsize=(16, 16), sharex=True,
                                sharey=True)
@@ -93,7 +82,8 @@ dscale = [0,10000]
 ax1.imshow(tb, cmap=cmap, vmin = scale[0], vmax = scale[1])
 ax1.set_title('tB')
 ax1.axis('off')
-ax2.imshow(pb, cmap=cmap, vmin = scale[0], vmax = scale[1])
+#ax2.imshow(pb, cmap=cmap, vmin = scale[0], vmax = scale[1])
+ax2.imshow(pb, cmap=cmap, vmin = 0, vmax = 0.0000002)
 ax2.set_title('pB')
 ax2.axis('off')
 ax3.imshow(db, cmap=cmap, vmin = dscale[0], vmax = dscale[1])
