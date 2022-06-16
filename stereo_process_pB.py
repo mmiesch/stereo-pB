@@ -11,11 +11,11 @@ from astropy.io import fits
 from astropy.time import Time
 
 #------------------------------------------------------------------------------
-# retrieve the most recent three files in a directory.
+# retrieve the most recent three files in selected directory.
 
 dir = 'data/seq/'
 
-files = list(filter(os.path.isfile, glob.glob(dir + "*")))
+files = list(filter(os.path.isfile, glob.glob(dir + "*.fts")))
 files.sort(key=lambda x: os.path.getmtime(x))
 
 f = files[-3:]
@@ -36,18 +36,6 @@ for file in f:
     times.append(Time(hdu.header['DATE']).gps)
     pol.append(hdu.header['POLAR'])
 
-#------------------------------------------------------------------------------
-# check for a matching set of polarizations
-
-for p in pol:
-    print(f"pb file polarization {p} {type(p)}")
-
-set = [0.0, 120.0, 240.0]
-
-if all(x in pol for x in set):
-    print("complete set")
-else:
-    print("incomplete set")
 
 #------------------------------------------------------------------------------
 # define an output file name based on the average time stamp
@@ -64,9 +52,22 @@ outfile = time.strftime('%Y%m%d_%H%M%S'+'_pBcom.fts')
 print(f"outfile = {outfile}")
 
 #------------------------------------------------------------------------------
+# check for a matching set of polarizations
+# if a match, then run the procedure
 
+set = [0.0, 120.0, 240.0]
 sswidl = "/usr/local/ssw/gen/setup/ssw_idl"
 
-idlcommand = f"combine_stereo_pb,'{dir+f[0]}','{dir+f[1]}','{dir+f[2]}'"
+for p in pol:
+    print(f"pb file polarization {p} {type(p)}")
 
-#subprocess.run([sswidl,"-e",idlcommand], env=os.environ)
+if all(x in pol for x in set):
+    print("complete set: creating pB composit file")
+    idlcommand = f"combine_stereo_pb,'{f[0]}','{f[1]}','{f[2]}'"
+    subprocess.run([sswidl,"-e",idlcommand], env=os.environ)
+
+else:
+    print("incomplete set: exiting")
+
+#------------------------------------------------------------------------------
+
