@@ -3,7 +3,7 @@ Script for processing polarized images from STEREO-A such that they can be used 
 """
 
 
-import numpy as numpy
+import numpy as np
 import os
 import subprocess
 
@@ -30,21 +30,26 @@ pol = []
 
 for file in f:
     hdu = fits.open(dir+file)[0]
-    times.append(Time(hdu.header['DATE']))
+    times.append(Time(hdu.header['DATE']).gps)
     pol.append(hdu.header['POLAR'])
 
+t = np.array(times)
 
-for t in times:
-    print(t)
+time = Time(0.5*(np.min(t) + np.max(t)), format = 'gps')
+time.format='iso'
+
+print(f"time stamp = {time}")
 
 for p in pol:
     print(f"pb file polarization {p}")
 
 
-
 #------------------------------------------------------------------------------
-# define a representative time and output file name
+# define an output file name based on the average time stamp
 
+outfile = time.strftime('%Y%m%d_%H%M%S'+'_pBcom.fts')
+
+print(f"outfile = {outfile}")
 
 #------------------------------------------------------------------------------
 
