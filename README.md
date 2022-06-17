@@ -27,4 +27,4 @@ This code is used for testing the RT functions.  It's a bit less polished.
 ---
 ## exploration directory
 
-This code is the to a large extent the first code written, indended to explore the nature of the data 
+This code is to a large extent the first code written, indended to explore the nature of the data.
