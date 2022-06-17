@@ -13,27 +13,15 @@ secchi_prep, [file1,file2,file3], h, a, /smask
 
 h = h[1]
 
-;times = [h[0].date, h[1].date, h[2].date]
 image = (2./3.d0)*total(a,3)
 
-mjd = time - 2400000.5d
-mjd_str={ mjd: floor(mjd), time: (mjd-floor(mjd))*8.64d7 }
-;h.date = anytim2utc(/ccds,mjd_str)
-
-;print,anytim2utc(/ccds,mjd_str)
-
-print,"AAAAAA "
-jd=systime(/julian,/utc)
-help,jd
-help,time
-;mjd=jd-2400000.5d
+; time was passed in julian date: convert to iso
 mjd=double(time)-2400000.5d
 mjd_str={ mjd: floor(mjd), time: (mjd-floor(mjd))*8.64d7 }
-print,anytim2utc(/ccsds,mjd_str)
+h.date = anytim2utc(/ccsds,mjd_str)
 
-;print, h.date
+help, h.date
 
-
-;sccwritefits, outfile, image, h
+sccwritefits, outfile, image, h
 
 end
