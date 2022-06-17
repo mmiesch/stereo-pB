@@ -15,7 +15,9 @@ dir = '../data/pBcom/'
 files = list(filter(os.path.isfile, glob.glob(dir + "*.fts")))
 files = sorted(files)
 
-dix = (0,5)
+N = len(files)
+
+dix = (0,N-2)
 
 #------------------------------------------------------------------------------
 
@@ -57,7 +59,7 @@ im = im2 - im1
 print(f"{np.min(im)} {np.max(im)}")
 
 ax = fig.add_subplot(2,3,3)
-plt.imshow(im, vmin=dscale[0], vmax=dscale[1], cmap = cmap)
+plt.imshow(im, vmin=dscale[0], vmax=dscale[1], cmap = 'bone')
 
 #------------------------------------------------------------------------------
 
@@ -91,7 +93,7 @@ im = im2 - im1
 print(f"{np.min(im)} {np.max(im)}")
 
 ax = fig.add_subplot(2,3,6)
-plt.imshow(im, vmin=dscale[0], vmax=dscale[1], cmap = cmap)
+plt.imshow(im, vmin=dscale[0], vmax=dscale[1], cmap = 'bone')
 
 #------------------------------------------------------------------------------
 print(80*'-')
