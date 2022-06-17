@@ -1,5 +1,6 @@
 """
 Script for processing polarized brightness (pB) images from STEREO-A/COR2 such that they can be used by the SWPC CME Analysis Tool (CAT).  This is mainly a wrapper for the IDL routine `combine_stereo_pb.pro`, which uses the SolarSoft routine `secchi_prep.pro` to combine three pB images into a total brightness (tB) image.  The resulting image is written as a fits file to a specified output directory.
+
 """
 
 import glob
@@ -10,7 +11,8 @@ import subprocess
 from astropy.io import fits
 from astropy.time import Time
 
-def process_files(dir, outdir, sswidl = "/usr/local/ssw/gen/setup/ssw_idl"):
+def process_files(dir, outdir, newfile = None, \
+                  sswidl = "/usr/local/ssw/gen/setup/ssw_idl"):
 
     #------------------------------------------------------------------------------
     # retrieve the most recent three files in selected directory.
@@ -22,7 +24,12 @@ def process_files(dir, outdir, sswidl = "/usr/local/ssw/gen/setup/ssw_idl"):
 
     files.sort(key=lambda x: os.path.getmtime(x))
 
-    f = files[-3:]
+    try:
+        idx = files.index(newfile)
+    except:
+        idx = len(files) - 1
+
+    f = files[idx-2:idx+1]
 
     #------------------------------------------------------------------------------
     # read metadata
@@ -65,7 +72,7 @@ def process_files(dir, outdir, sswidl = "/usr/local/ssw/gen/setup/ssw_idl"):
     if all(x in pol for x in set) and dt < dtmax:
         print("complete set: creating pB composite file")
         idlcommand = f"combine_stereo_pb,'{f[0]}','{f[1]}','{f[2]}','{time.jd}','{outfile}'"
-        subprocess.run([sswidl,"-e",idlcommand], env=os.environ)
+        #subprocess.run([sswidl,"-e",idlcommand], env=os.environ)
 
     else:
         print(f"incomplete set: exiting {pol} {dt/60}")

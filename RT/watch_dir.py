@@ -33,7 +33,7 @@ sswidl = '/usr/local/ssw/gen/setup/ssw_idl'
 class Handler(FileSystemEventHandler):
     def on_created(self, event):
         print("New image found: ", event.src_path)
-        process_files(targetdir, outdir, sswidl)
+        process_files(targetdir, outdir, event.src_path, sswidl)
 
 #------------------------------------------------------------------------------
 # main program that runs continually
