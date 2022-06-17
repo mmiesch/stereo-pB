@@ -1,6 +1,10 @@
 
+import glob
+import os
+
+from astropy.io import fits
 from astropy.time import Time
-from stereo_process_pB import process_files
+from stereo_process_pB import complete_set
 
 """
 This function is for processing STEREO-A polarized brightness (pB) file in "batch" mode.  It processes all files in a specified target directory.  It starts by generating a file list for the target directory, then it loops through all files in the directory looking for two other files that form a complete set.
@@ -24,3 +28,30 @@ outdir = '../data/pBcom/'
 
 # location of sswidl executable
 sswidl = "/usr/local/ssw/gen/setup/ssw_idl"
+
+#------------------------------------------------------------------------------
+# first get the file list of the target directory
+
+files = list(filter(os.path.isfile, glob.glob(targetdir + "*.fts")))
+
+if len(files) < 3:
+    exit(0)
+
+files.sort(key=lambda x: os.path.getmtime(x))
+
+#------------------------------------------------------------------------------
+# now loop over files, looking for a complete set
+
+#for file in files:
+
+#file = files[0]
+
+#print(file)
+
+complete, time = complete_set(files)
+
+if complete:
+    print(f"complete set {time}")
+else:
+    print("incomplete set")
+

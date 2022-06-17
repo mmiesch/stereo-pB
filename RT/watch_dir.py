@@ -28,11 +28,16 @@ outdir = '../data/pBcom/'
 sswidl = '/usr/local/ssw/gen/setup/ssw_idl'
 
 #------------------------------------------------------------------------------
+red = '\033[91m'
+yellow = '\033[93m'
+cend = '\033[0m'
+
+#------------------------------------------------------------------------------
 # event handler
 
 class Handler(FileSystemEventHandler):
     def on_created(self, event):
-        print("New image found: ", event.src_path)
+        print(yellow+f"New image found: {event.src_path}"+cend)
         process_files(targetdir, outdir, event.src_path, sswidl)
 
 #------------------------------------------------------------------------------
