@@ -10,78 +10,78 @@ import subprocess
 from astropy.io import fits
 from astropy.time import Time
 
-#------------------------------------------------------------------------------
-# define system-specific paramters
+def process_files(dir, outdir, sswidl = "/usr/local/ssw/gen/setup/ssw_idl"):
 
-# input directory
-dir = '../data/seq/'
+    #------------------------------------------------------------------------------
+    # retrieve the most recent three files in selected directory.
 
-# output directory
-outdir = '../data/pBcom/'
+    print("in process_files")
 
-# location of sswidl executable
-sswidl = "/usr/local/ssw/gen/setup/ssw_idl"
+    files = list(filter(os.path.isfile, glob.glob(dir + "*.fts")))
 
-#------------------------------------------------------------------------------
-# retrieve the most recent three files in selected directory.
+    print(f"MSM {len(files)}")
 
-files = list(filter(os.path.isfile, glob.glob(dir + "*.fts")))
-files.sort(key=lambda x: os.path.getmtime(x))
+    if len(files) < 3:
+        return(0)
 
-f = files[-3:]
+    files.sort(key=lambda x: os.path.getmtime(x))
 
-for file in f:
-    print(file)
+    f = files[-3:]
 
-#------------------------------------------------------------------------------
-# read metadata
+    for file in f:
+        print(file)
 
-print(80*'-')
+    #------------------------------------------------------------------------------
+    # read metadata
 
-times = []
-pol = []
+    print(80*'-')
 
-for file in f:
-    hdu = fits.open(file)[0]
-    times.append(Time(hdu.header['DATE']).gps)
-    pol.append(hdu.header['POLAR'])
+    times = []
+    pol = []
 
-#------------------------------------------------------------------------------
-# define an output file name based on the average time stamp
+    for file in f:
+        hdu = fits.open(file)[0]
+        times.append(Time(hdu.header['DATE']).gps)
+        pol.append(hdu.header['POLAR'])
 
-t = np.array(times)
+    #------------------------------------------------------------------------------
+    # define an output file name based on the average time stamp
 
-dt = np.max(t) - np.min(t)
+    t = np.array(times)
 
-time = Time(0.5*(np.min(t) + np.max(t)), format = 'gps')
-time.format='iso'
+    dt = np.max(t) - np.min(t)
 
-print(f"time stamp, dt = {time} {dt}")
+    time = Time(0.5*(np.min(t) + np.max(t)), format = 'gps')
+    time.format='iso'
 
-outfile = outdir + time.strftime('%Y%m%d_%H%M%S'+'_pBcom.fts')
+    print(f"time stamp, dt = {time} {dt}")
 
-print(f"outfile = {outfile}")
+    outfile = outdir + time.strftime('%Y%m%d_%H%M%S'+'_pBcom.fts')
 
-#------------------------------------------------------------------------------
-# check for a matching set of polarizations
-# and check that all the measurements are within 30 min of each other
-# if a match, then run the procedure
+    print(f"outfile = {outfile}")
 
-set = [0.0, 120.0, 240.0]
+    #------------------------------------------------------------------------------
+    # check for a matching set of polarizations
+    # and check that all the measurements are within 30 min of each other
+    # if a match, then run the procedure
 
-# max allowable time difference, in seconds
-dtmax = 1800.
+    set = [0.0, 120.0, 240.0]
 
-for p in pol:
-    print(f"pb file polarization {p}")
+    # max allowable time difference, in seconds
+    dtmax = 1800.
 
-if all(x in pol for x in set) and dt < dtmax:
-    print("complete set: creating pB composite file")
-    idlcommand = f"combine_stereo_pb,'{f[0]}','{f[1]}','{f[2]}','{time.jd}','{outfile}'"
-    subprocess.run([sswidl,"-e",idlcommand], env=os.environ)
+    for p in pol:
+        print(f"pb file polarization {p}")
 
-else:
-    print(f"incomplete set: exiting {pol} {dt/60}")
+    if all(x in pol for x in set) and dt < dtmax:
+        print("complete set: creating pB composite file")
+        idlcommand = f"combine_stereo_pb,'{f[0]}','{f[1]}','{f[2]}','{time.jd}','{outfile}'"
+        subprocess.run([sswidl,"-e",idlcommand], env=os.environ)
 
-#------------------------------------------------------------------------------
+    else:
+        print(f"incomplete set: exiting {pol} {dt/60}")
+
+    return(0)
+
+    #------------------------------------------------------------------------------
 
