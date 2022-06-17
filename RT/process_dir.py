@@ -1,5 +1,6 @@
 
 import glob
+import numpy as np
 import os
 
 from astropy.io import fits
@@ -17,17 +18,43 @@ If the pB (seq) files arrive one at a time then the `watch_dir.py` function shou
 
 """
 #------------------------------------------------------------------------------
+red = '\033[91m'
+yellow = '\033[93m'
+cend = '\033[0m'
+
+#------------------------------------------------------------------------------
 # define platform-specific parameters
 
 # this is the directory to monitor for new files
-#dir = '../data/seq'
-targetdir = '../data/tmp/'
+targetdir = '../data/seq/'
+#targetdir = '../data/tmp/'
 
 #output directory
 outdir = '../data/pBcom/'
 
 # location of sswidl executable
 sswidl = "/usr/local/ssw/gen/setup/ssw_idl"
+
+#------------------------------------------------------------------------------
+# define platform-agnostic parameters
+# make sure these are consistent with the `complete_set` function in 
+# `stereo_process_pB.py`
+
+pset = [0.0, 120.0, 240.0]
+
+# max allowable time difference, in seconds
+dtmax = 1800.
+
+#------------------------------------------------------------------------------
+# check input specification
+
+if targetdir[-1] != '/':
+    print(red+"Error: target directory must end in '/'"+cend)
+    exit(1)
+
+if outdir[-1] != '/':
+    print(red+"Error: output directory must end in '/'"+cend)
+    exit(1)
 
 #------------------------------------------------------------------------------
 # first get the file list of the target directory
@@ -44,11 +71,25 @@ files.sort(key=lambda x: os.path.getmtime(x))
 
 #for file in files:
 
-#file = files[0]
+file = files[0]
 
-#print(file)
+hdu = fits.open(file)[0]
+time = Time(hdu.header['DATE']).gps
+pol = hdu.header['POLAR']
 
-complete, time = complete_set(files)
+print(yellow+file+cend)
+
+fset = [file]
+
+for f in files:
+    hdu = fits.open(f)[0]
+    dt = np.abs(Time(hdu.header['DATE']).gps - time)
+    newpol = hdu.header['POLAR']
+    if (newpol != pol) and (dt < dtmax) :
+        fset.append(f)
+
+#------------------------------------------------------------------------------
+complete, time = complete_set(fset)
 
 if complete:
     print(f"complete set {time}")

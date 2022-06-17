@@ -18,7 +18,7 @@ cend = '\033[0m'
 def complete_set(files, verbose = True):
 
     # check for a matching set of polarizations
-    set = [0.0, 120.0, 240.0]
+    pset = [0.0, 120.0, 240.0]
 
     # and check that all the measurements are within 30 min of each other
     # max allowable time difference, in seconds
@@ -42,7 +42,7 @@ def complete_set(files, verbose = True):
     t = np.array(times)
     dt = np.max(t) - np.min(t)
 
-    if all(x in pol for x in set) and dt < dtmax:
+    if all(x in pol for x in pset) and dt < dtmax:
         # complete set!
         # define a mean time to associate with the composite image
         time = Time(0.5*(np.min(t) + np.max(t)), format = 'gps')

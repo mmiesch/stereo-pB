@@ -44,6 +44,18 @@ class Handler(FileSystemEventHandler):
 # main program that runs continually
 
 if __name__ == "__main__":
+
+    #------------------------------------------------------------------------------
+    # check input specification
+
+    if targetdir[-1] != '/':
+        print(red+"Error: target directory must end in '/'"+cend)
+        exit(1)
+
+    if outdir[-1] != '/':
+        print(red+"Error: output directory must end in '/'"+cend)
+        exit(1)
+
     event_handler = Handler()
     observer = Observer()
     observer.schedule(event_handler, targetdir, recursive=False)
