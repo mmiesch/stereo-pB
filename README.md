@@ -1,6 +1,6 @@
 # stereo-pB
 
-The sofware in this repository is intended to process STEREO-A polarized brightness (pB) beacon images for use with the SWPC CME Analysis Tool (CAT).
+The software in this repository is intended to process STEREO-A polarized brightness (pB) beacon images for use with the SWPC CME Analysis Tool (CAT).
 
 In nominal operations, the CAT uses total brightness (tB) images from the STEREO-A beacon.  The capability to also use pB images leverages the full cadence of observations available from the beacon.  This can be a valuable source of information that was previously untapped, particularly during intervals when only pB observations are executed.
 
