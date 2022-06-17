@@ -14,10 +14,10 @@ from astropy.time import Time
 # define system-specific paramters
 
 # input directory
-dir = 'data/seq/'
+dir = '../data/seq/'
 
 # output directory
-outdir = 'data/pBcom/'
+outdir = '../data/pBcom/'
 
 # location of sswidl executable
 sswidl = "/usr/local/ssw/gen/setup/ssw_idl"
