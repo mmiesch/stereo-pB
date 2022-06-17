@@ -1,8 +1,6 @@
 pro combine_stereo_pb, file1, file2, file3, time, outfile
 
-; the time should be passed as a string in iso format for
-; proper inclusion in the header, e.g.
-; '2022-06-14T21:14:54.040'
+; the time should be passed in jd format
 
 secchi_prep, [file1,file2,file3], h, a, /smask
 
