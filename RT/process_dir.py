@@ -2,6 +2,7 @@
 import glob
 import numpy as np
 import os
+import subprocess
 
 from astropy.io import fits
 from astropy.time import Time
@@ -37,7 +38,7 @@ sswidl = "/usr/local/ssw/gen/setup/ssw_idl"
 
 #------------------------------------------------------------------------------
 # define platform-agnostic parameters
-# make sure these are consistent with the `complete_set` function in 
+# make sure these are consistent with the `complete_set` function in
 # `stereo_process_pB.py`
 
 pset = [0.0, 120.0, 240.0]
@@ -69,30 +70,42 @@ files.sort(key=lambda x: os.path.getmtime(x))
 #------------------------------------------------------------------------------
 # now loop over files, looking for a complete set
 
-#for file in files:
+# remaining files to be processed
+filelist = files.copy()
 
-file = files[0]
+for file in files:
 
-hdu = fits.open(file)[0]
-time = Time(hdu.header['DATE']).gps
-pol = hdu.header['POLAR']
+    #print(yellow+f"{file} {len(filelist)}"+cend)
 
-print(yellow+file+cend)
+    hdu = fits.open(file)[0]
+    time = Time(hdu.header['DATE']).gps
+    pol = hdu.header['POLAR']
 
-fset = [file]
+    fset = [file]
 
-for f in files:
-    hdu = fits.open(f)[0]
-    dt = np.abs(Time(hdu.header['DATE']).gps - time)
-    newpol = hdu.header['POLAR']
-    if (newpol != pol) and (dt < dtmax) :
-        fset.append(f)
+    for f in filelist:
+        hdu = fits.open(f)[0]
+        dt = np.abs(Time(hdu.header['DATE']).gps - time)
+        newpol = hdu.header['POLAR']
+        if (newpol != pol) and (dt < dtmax) :
+            fset.append(f)
 
-#------------------------------------------------------------------------------
-complete, time = complete_set(fset)
+    #------------------------------------------------------------------------------
+    complete, time = complete_set(fset)
 
-if complete:
-    print(f"complete set {time}")
-else:
-    print("incomplete set")
+    if complete:
+
+        outfile = outdir + time.strftime('%Y%m%d_%H%M%S'+'_pBcom.fts')
+
+        print(yellow+f"Creating pB composite file {outfile}"+cend)
+
+        idlcommand = f"combine_stereo_pb,'{fset[0]}','{fset[1]}','{fset[2]}','{time.jd}','{outfile}'"
+        subprocess.run([sswidl,"-e",idlcommand], env=os.environ)
+
+        # remove complete set from file list
+        for f in fset:
+            try:
+                filelist.remove(f)
+            except ValueError:
+                pass
 
