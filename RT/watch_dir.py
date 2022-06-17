@@ -1,11 +1,12 @@
 
+import os
 import time
 from stereo_process_pB import process_files
 from watchdog.events import FileSystemEventHandler
 from watchdog.observers import Observer
 
 """
-This function is for processing STEREO-A polarized brightness (pB) file in real-time "watch" mode.  The function runs continuously, monitoring a specified target directory for the appearance of a new file.  When a new fits file appears, the function will group this file with the previous two files in terms of the date of file creation.  Then it checks to see if these three files form a complete set.  
+This function is for processing STEREO-A polarized brightness (pB) file in real-time "watch" mode.  The function runs continuously, monitoring a specified target directory for the appearance of a new file.  When a new fits file appears, the function will group this file with the previous two files in terms of the date of file creation.  Then it checks to see if these three files form a complete set.
 
 A complete set consists of three observations with different polarization states (0, 120, and 240) all taken within 30 minutes of one another.  If a complete set is found, the three pB images are processed with the SolarSoft `secchi_prep` function and the images are combined to form a total brightness (tB) image.   This tB image is written as a fits file to a specified output directory.  The output file name reflects the date of the observation and includes the tag `pBcom` to represent a polarized brightness composite.
 
@@ -55,6 +56,9 @@ if __name__ == "__main__":
     if outdir[-1] != '/':
         print(red+"Error: output directory must end in '/'"+cend)
         exit(1)
+
+    if not os.path.exists(outdir):
+        os.mkdir(outdir)
 
     event_handler = Handler()
     observer = Observer()

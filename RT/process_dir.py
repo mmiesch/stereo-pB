@@ -31,7 +31,7 @@ targetdir = '../data/seq/'
 #targetdir = '../data/tmp/'
 
 #output directory
-outdir = '../data/pBcom/'
+outdir = '../data/pBcomooo/'
 
 # location of sswidl executable
 sswidl = "/usr/local/ssw/gen/setup/ssw_idl"
@@ -56,6 +56,9 @@ if targetdir[-1] != '/':
 if outdir[-1] != '/':
     print(red+"Error: output directory must end in '/'"+cend)
     exit(1)
+
+if not os.path.exists(outdir):
+    os.mkdir(outdir)
 
 #------------------------------------------------------------------------------
 # first get the file list of the target directory

@@ -92,7 +92,7 @@ def process_files(dir, outdir, newfile = None, \
         print(f"outfile = {outfile}")
 
         idlcommand = f"combine_stereo_pb,'{f[0]}','{f[1]}','{f[2]}','{time.jd}','{outfile}'"
-        #subprocess.run([sswidl,"-e",idlcommand], env=os.environ)
+        subprocess.run([sswidl,"-e",idlcommand], env=os.environ)
 
     return(0)
 
