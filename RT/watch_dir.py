@@ -25,7 +25,7 @@ targetdir = '../data/tmp/'
 outdir = '../data/pBcom/'
 
 # location of sswidl executable
-sswidl = "/usr/local/ssw/gen/setup/ssw_idl"
+sswidl = '/usr/local/ssw/gen/setup/ssw_idl'
 
 #------------------------------------------------------------------------------
 # event handler
@@ -41,7 +41,7 @@ class Handler(FileSystemEventHandler):
 if __name__ == "__main__":
     event_handler = Handler()
     observer = Observer()
-    observer.schedule(event_handler, dir, recursive=False)
+    observer.schedule(event_handler, targetdir, recursive=False)
     observer.start()
     print("Monitoring for files....")
     try:

@@ -1,5 +1,5 @@
 """
-Script for processing polarized images from STEREO-A such that they can be used by the SWPC CME Analysis Tool (CAT)
+Script for processing polarized brightness (pB) images from STEREO-A/COR2 such that they can be used by the SWPC CME Analysis Tool (CAT).  This is mainly a wrapper for the IDL routine `combine_stereo_pb.pro`, which uses the SolarSoft routine `secchi_prep.pro` to combine three pB images into a total brightness (tB) image.  The resulting image is written as a fits file to a specified output directory.
 """
 
 import glob
