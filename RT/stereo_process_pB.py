@@ -15,11 +15,7 @@ def process_files(dir, outdir, sswidl = "/usr/local/ssw/gen/setup/ssw_idl"):
     #------------------------------------------------------------------------------
     # retrieve the most recent three files in selected directory.
 
-    print("in process_files")
-
     files = list(filter(os.path.isfile, glob.glob(dir + "*.fts")))
-
-    print(f"MSM {len(files)}")
 
     if len(files) < 3:
         return(0)
@@ -27,9 +23,6 @@ def process_files(dir, outdir, sswidl = "/usr/local/ssw/gen/setup/ssw_idl"):
     files.sort(key=lambda x: os.path.getmtime(x))
 
     f = files[-3:]
-
-    for file in f:
-        print(file)
 
     #------------------------------------------------------------------------------
     # read metadata
@@ -40,6 +33,7 @@ def process_files(dir, outdir, sswidl = "/usr/local/ssw/gen/setup/ssw_idl"):
     pol = []
 
     for file in f:
+        print(file)
         hdu = fits.open(file)[0]
         times.append(Time(hdu.header['DATE']).gps)
         pol.append(hdu.header['POLAR'])
@@ -54,8 +48,6 @@ def process_files(dir, outdir, sswidl = "/usr/local/ssw/gen/setup/ssw_idl"):
     time = Time(0.5*(np.min(t) + np.max(t)), format = 'gps')
     time.format='iso'
 
-    print(f"time stamp, dt = {time} {dt}")
-
     outfile = outdir + time.strftime('%Y%m%d_%H%M%S'+'_pBcom.fts')
 
     print(f"outfile = {outfile}")
@@ -69,9 +61,6 @@ def process_files(dir, outdir, sswidl = "/usr/local/ssw/gen/setup/ssw_idl"):
 
     # max allowable time difference, in seconds
     dtmax = 1800.
-
-    for p in pol:
-        print(f"pb file polarization {p}")
 
     if all(x in pol for x in set) and dt < dtmax:
         print("complete set: creating pB composite file")
