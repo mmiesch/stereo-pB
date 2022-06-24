@@ -31,7 +31,7 @@ targetdir = '../data/seq/'
 #targetdir = '../data/tmp/'
 
 #output directory
-outdir = '../data/pBcomooo/'
+outdir = '../data/pBcom/'
 
 # location of sswidl executable
 sswidl = "/usr/local/ssw/gen/setup/ssw_idl"
@@ -81,14 +81,14 @@ for file in files:
     #print(yellow+f"{file} {len(filelist)}"+cend)
 
     hdu = fits.open(file)[0]
-    time = Time(hdu.header['DATE']).gps
+    time = Time(hdu.header['DATE-OBS']).gps
     pol = hdu.header['POLAR']
 
     fset = [file]
 
     for f in filelist:
         hdu = fits.open(f)[0]
-        dt = np.abs(Time(hdu.header['DATE']).gps - time)
+        dt = np.abs(Time(hdu.header['DATE-OBS']).gps - time)
         newpol = hdu.header['POLAR']
         if (newpol != pol) and (dt < dtmax) :
             fset.append(f)
