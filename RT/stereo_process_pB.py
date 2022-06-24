@@ -36,7 +36,7 @@ def complete_set(files, verbose = True):
         if verbose:
             print(file)
         hdu = fits.open(file)[0]
-        times.append(Time(hdu.header['DATE']).gps)
+        times.append(Time(hdu.header['DATE-AVG']).gps)
         pol.append(hdu.header['POLAR'])
 
     t = np.array(times)
